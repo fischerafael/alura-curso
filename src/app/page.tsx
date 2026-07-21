@@ -1,5 +1,5 @@
-import { HelloWorld } from "@frontend/components/HelloWorld";
+import { LandingHero } from "@frontend/components/LandingHero";
 
 export default function Home() {
-  return <HelloWorld />;
+  return <LandingHero />;
 }
