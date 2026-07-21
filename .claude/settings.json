@@ -1,7 +1,24 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx --yes create-next-app@latest . --typescript --eslint --tailwind --src-dir --app --import-alias \"@/*\" --use-npm --no-turbopack)"
+      "Bash(npx --yes create-next-app@latest . --typescript --eslint --tailwind --src-dir --app --import-alias \"@/*\" --use-npm --no-turbopack)",
+      "Bash(mkdir -p prisma)",
+      "Bash(touch prisma/.gitkeep)",
+      "Bash(mkdir -p src/app/api/tasks)",
+      "Bash(touch src/app/api/tasks/.gitkeep)",
+      "Bash(mkdir -p src/lib)",
+      "Bash(mkdir -p src/frontend)",
+      "Bash(mkdir -p src/backend)",
+      "Bash(mv src/components src/frontend/components)",
+      "Bash(mv src/lib src/backend/lib)",
+      "Bash(mv prisma *)",
+      "Bash(rm -f src/app/api/tasks/.gitkeep)",
+      "Bash(rmdir src/app/api/tasks)",
+      "Bash(mkdir -p src/app/api/hello)",
+      "Bash(cat /tmp/nextdev.log 2>&1 | tail -30)",
+      "Read(//tmp/**)",
+      "Bash(curl -s http://localhost:3001/api/hello)",
+      "Bash(curl -s http://localhost:3001/)"
     ]
   }
 }
