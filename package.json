@@ -6,15 +6,23 @@
     "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "setup": "node scripts/setup.mjs",
+    "prisma:generate": "prisma generate --schema=src/backend/prisma/schema.prisma",
+    "prisma:migrate": "prisma migrate dev --schema=src/backend/prisma/schema.prisma",
+    "prisma:studio": "prisma studio --schema=src/backend/prisma/schema.prisma"
   },
   "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "jsonwebtoken": "^9.0.3",
     "next": "16.2.10",
+    "prisma": "^6.19.3",
     "react": "19.2.4",
     "react-dom": "19.2.4"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

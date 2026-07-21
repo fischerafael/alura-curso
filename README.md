@@ -1,24 +1,41 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Projeto Next.js (App Router) com backend/frontend separados em `src/backend` e `src/frontend`, Prisma + SQLite e autenticação simplificada por email (JWT).
 
-## Getting Started
+## Setup
 
-First, run the development server:
+Clonou o repositório? Um comando só resolve instalação, `.env` e banco de dados:
+
+```bash
+npm run setup
+```
+
+Isso faz: `npm install` → cria `.env` a partir de `.env.example` (se ainda não existir) → roda as migrations do Prisma e cria o `dev.db`.
+
+## Rodando o projeto
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abra [http://localhost:3000](http://localhost:3000) para o frontend e teste a API em `http://localhost:3000/api/hello` ou `POST http://localhost:3000/api/auth/login` com `{ "email": "voce@exemplo.com" }`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+> `dev` já roda com `--webpack` (não Turbopack) por causa de um crash do Turbopack em Windows.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Estrutura
+
+```
+src/
+├── app/        # router do Next.js (páginas + api routes) — só "casca fina"
+├── frontend/   # componentes React (client-side), alias @frontend/*
+└── backend/    # lógica de negócio, Prisma, auth, alias @backend/*
+```
+
+## Comandos úteis do Prisma
+
+```bash
+npm run prisma:migrate   # cria/atualiza o schema e o banco (SQLite)
+npm run prisma:generate  # regenera o Prisma Client
+npm run prisma:studio    # abre uma UI para ver os dados do banco
+```
 
 ## Learn More
 
