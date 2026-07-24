@@ -42,8 +42,9 @@ Objetivo: garantir que a implementação está correta antes de liberar para PR.
 - Rode `npm run lint`.
 - Rode `npm run build`.
 - Rode a suíte de testes, se existir (hoje o projeto ainda não tem testes automatizados configurados — não invente testes que não existem).
-- Faça uma auto-revisão comparando a implementação com o plano da fase 2: confira se algum item do plano ficou pela metade, se algum edge case levantado na fase 1 foi esquecido, e se não há erros óbvios.
-- Se encontrar problemas, volte para a fase 3 (ou até a fase 2, se o plano estava errado) e corrija — não finalize com pendências conhecidas.
+- Acione o subagent `code-reviewer` (via `Agent`, `subagent_type: "code-reviewer"`) passando o contexto do que foi implementado (arquivos alterados, `git diff`, e o plano da fase 2) para uma revisão independente focada nas convenções do AGENTS.md, correção, segurança e simplicidade.
+- Faça também sua própria auto-revisão comparando a implementação com o plano da fase 2: confira se algum item do plano ficou pela metade, se algum edge case levantado na fase 1 foi esquecido.
+- Se o `code-reviewer` ou a auto-revisão encontrarem problemas, volte para a fase 3 (ou até a fase 2, se o plano estava errado) e corrija — não finalize com pendências conhecidas.
 
 ### Encerramento
 
