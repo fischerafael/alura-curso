@@ -32,7 +32,10 @@ Aliases de import configurados em [tsconfig.json](tsconfig.json): `@/*`, `@front
 | `npm run prisma:generate` | Regenera o Prisma Client |
 | `npm run prisma:studio` | UI visual do banco |
 
-Não existe suíte de testes automatizados configurada neste projeto ainda.
+| `npm run test:backend` | Testes do backend (Vitest, ambiente `node`), arquivos `*.test.ts` em `src/backend/` |
+| `npm run test:frontend` | Testes do frontend (Vitest, ambiente `jsdom` + Testing Library), arquivos `*.test.tsx`/`*.test.ts` em `src/frontend/` |
+
+Configuração em [vitest.config.ts](vitest.config.ts) (dois projetos Vitest) e [vitest.setup.ts](vitest.setup.ts) (jest-dom para o projeto frontend).
 
 ## Convenções de código
 

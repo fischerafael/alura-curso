@@ -31,7 +31,12 @@ Objetivo: gerar um plano executável e revisável.
 
 Objetivo: executar o plano confirmado.
 
-- Implemente exatamente o que foi combinado no plano, usando também o contexto da fase 1 como referência.
+Se a funcionalidade (ou parte dela) tocar código em `src/backend/`, siga TDD: escreva os testes antes de implementar.
+
+- **Testes primeiro (somente para `src/backend/`)**: antes de escrever a implementação, escreva os testes (`*.test.ts`, Vitest, ambiente `node`) cobrindo o comportamento esperado descrito no plano — casos de sucesso e os edge cases levantados na fase 1. Rode os testes e confirme que falham pelo motivo certo (função/módulo ainda não existe ou não implementado), não por erro de sintaxe no próprio teste.
+  - Para interações com sistemas externos e banco de dados (Prisma, APIs externas, etc.), mocke essas dependências — não bata em banco real nem em serviços externos nos testes.
+  - Se o plano da fase 2 não detalhou os casos de teste, é aceitável refiná-los aqui, mas sem mudar o escopo combinado; se perceber que faltou um caso relevante no plano, avise o usuário.
+- **Implementação**: implemente exatamente o que foi combinado no plano, usando também o contexto da fase 1 como referência, até os testes escritos passarem (para o backend) ou seguindo o plano normalmente (para o restante do código, onde ainda não há TDD).
 - Siga as convenções do [AGENTS.md](../../../AGENTS.md) (sem lógica de negócio em `src/app/`, TypeScript strict, etc.).
 - Se durante a implementação surgir a necessidade de desviar do plano, avise o usuário antes de seguir.
 
@@ -41,7 +46,7 @@ Objetivo: garantir que a implementação está correta antes de liberar para PR.
 
 - Rode `npm run lint`.
 - Rode `npm run build`.
-- Rode a suíte de testes, se existir (hoje o projeto ainda não tem testes automatizados configurados — não invente testes que não existem).
+- Rode `npm run test:backend` se algum arquivo em `src/backend/` foi tocado, e `npm run test:frontend` se algum arquivo em `src/frontend/` foi tocado. Todos os testes precisam passar, incluindo os escritos na fase 3.
 - Acione o subagent `code-reviewer` (via `Agent`, `subagent_type: "code-reviewer"`) passando o contexto do que foi implementado (arquivos alterados, `git diff`, e o plano da fase 2) para uma revisão independente focada nas convenções do AGENTS.md, correção, segurança e simplicidade.
 - Faça também sua própria auto-revisão comparando a implementação com o plano da fase 2: confira se algum item do plano ficou pela metade, se algum edge case levantado na fase 1 foi esquecido.
 - Se o `code-reviewer` ou a auto-revisão encontrarem problemas, volte para a fase 3 (ou até a fase 2, se o plano estava errado) e corrija — não finalize com pendências conhecidas.
