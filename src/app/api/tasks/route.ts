@@ -1,6 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthPayload } from "@backend/auth";
-import { InvalidStatusError, listTasks } from "@backend/tasks";
+import {
+  createTask,
+  InvalidStatusError,
+  InvalidTitleError,
+  listTasks,
+} from "@backend/tasks";
 
 export async function GET(request: NextRequest) {
   const auth = getAuthPayload(request);
@@ -21,4 +26,21 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST (criar task) chega na A3, junto com os alunos.
+export async function POST(request: NextRequest) {
+  const auth = getAuthPayload(request);
+  if (!auth) {
+    return NextResponse.json({ error: "Não autenticado" }, { status: 401 });
+  }
+
+  const body = await request.json();
+
+  try {
+    const task = await createTask(auth.sub, body.title);
+    return NextResponse.json(task, { status: 201 });
+  } catch (error) {
+    if (error instanceof InvalidTitleError) {
+      return NextResponse.json({ error: error.message }, { status: 400 });
+    }
+    throw error;
+  }
+}
