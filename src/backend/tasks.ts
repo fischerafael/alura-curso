@@ -2,8 +2,10 @@ import { TaskStatus } from "@prisma/client";
 import { prisma } from "@backend/lib/db";
 
 export class InvalidStatusError extends Error {}
+export class InvalidTitleError extends Error {}
 
 const VALID_STATUSES = Object.values(TaskStatus);
+const MAX_TITLE_LENGTH = 200;
 
 export async function listTasks(userId: string, status?: string) {
   if (status !== undefined && !VALID_STATUSES.includes(status as TaskStatus)) {
@@ -18,4 +20,20 @@ export async function listTasks(userId: string, status?: string) {
   });
 
   return { tasks, count: tasks.length };
+}
+
+export async function createTask(userId: string, title: string) {
+  const trimmedTitle = title?.trim();
+
+  if (!trimmedTitle) {
+    throw new InvalidTitleError("Título é obrigatório");
+  }
+
+  if (trimmedTitle.length > MAX_TITLE_LENGTH) {
+    throw new InvalidTitleError("Título muito longo");
+  }
+
+  return prisma.task.create({
+    data: { title: trimmedTitle, userId },
+  });
 }
