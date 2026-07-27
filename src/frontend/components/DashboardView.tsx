@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { clearSession, getSession } from "@frontend/lib/session";
 import { AddTaskModal } from "@frontend/components/AddTaskModal";
+import { DeleteTaskModal } from "@frontend/components/DeleteTaskModal";
 
 type Task = {
   id: string;
@@ -23,6 +24,7 @@ export function DashboardView() {
   const [token, setToken] = useState<string | null>(null);
   const [tasks, setTasks] = useState<Task[] | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<Task | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
 
   const loadTasks = useCallback((authToken: string) => {
@@ -61,6 +63,11 @@ export function DashboardView() {
   function handleTaskCreated() {
     if (token) loadTasks(token);
     setIsModalOpen(false);
+  }
+
+  function handleTaskDeleted() {
+    if (token) loadTasks(token);
+    setTaskToDelete(null);
   }
 
   function handleLogout() {
@@ -110,9 +117,18 @@ export function DashboardView() {
         {tasks?.map((task) => (
           <div key={task.id} className="flex items-center justify-between py-4">
             <span className="text-sm">{task.title}</span>
-            <span className="rounded-full border border-zinc-200 px-3 py-1 text-xs text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
-              {STATUS_LABEL[task.status]}
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="rounded-full border border-zinc-200 px-3 py-1 text-xs text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
+                {STATUS_LABEL[task.status]}
+              </span>
+              <button
+                onClick={() => setTaskToDelete(task)}
+                aria-label={`Remover task ${task.title}`}
+                className="text-xs font-medium text-red-500 transition-opacity hover:opacity-70"
+              >
+                Remover
+              </button>
+            </div>
           </div>
         ))}
       </div>
@@ -122,6 +138,15 @@ export function DashboardView() {
           token={token}
           onClose={() => setIsModalOpen(false)}
           onCreated={handleTaskCreated}
+        />
+      )}
+
+      {taskToDelete && token && (
+        <DeleteTaskModal
+          token={token}
+          task={taskToDelete}
+          onClose={() => setTaskToDelete(null)}
+          onDeleted={handleTaskDeleted}
         />
       )}
     </div>
