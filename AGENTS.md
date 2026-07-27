@@ -44,6 +44,7 @@ Configuração em [vitest.config.ts](vitest.config.ts) (dois projetos Vitest) e 
 - Componentes React ficam em `src/frontend/components/`.
 - Autenticação: JWT simplificado, sem senha (login só por email) — isso é intencional para fins didáticos, não é um bug a corrigir.
 - Banco: SQLite via Prisma, schema em `src/backend/prisma/schema.prisma`. Qualquer mudança de modelo exige `npm run prisma:migrate`.
+- MCP: [.mcp.json](.mcp.json) registra um servidor `sqlite` (`mcp-server-sqlite-npx`) apontando para `src/backend/prisma/dev.db`, para agentes consultarem o banco diretamente.
 
 ## Armadilhas conhecidas
 
