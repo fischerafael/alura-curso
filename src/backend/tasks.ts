@@ -3,6 +3,7 @@ import { prisma } from "@backend/lib/db";
 
 export class InvalidStatusError extends Error {}
 export class InvalidTitleError extends Error {}
+export class TaskNotFoundError extends Error {}
 
 const VALID_STATUSES = Object.values(TaskStatus);
 const MAX_TITLE_LENGTH = 200;
@@ -36,4 +37,14 @@ export async function createTask(userId: string, title: string) {
   return prisma.task.create({
     data: { title: trimmedTitle, userId },
   });
+}
+
+export async function deleteTask(userId: string, taskId: string) {
+  const result = await prisma.task.deleteMany({
+    where: { id: taskId, userId },
+  });
+
+  if (result.count === 0) {
+    throw new TaskNotFoundError("Task não encontrada");
+  }
 }
