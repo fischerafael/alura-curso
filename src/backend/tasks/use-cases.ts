@@ -1,48 +1,10 @@
-import { TaskStatus } from "@prisma/client";
-import { z } from "zod";
 import * as tasksData from "@backend/data/tasks";
+import { listTasksSchema, createTaskSchema } from "./schema";
+import { toTaskDTO } from "./dto";
 
 export class InvalidStatusError extends Error {}
 export class InvalidTitleError extends Error {}
 export class TaskNotFoundError extends Error {}
-
-const MAX_TITLE_LENGTH = 200;
-
-const listTasksSchema = z.object({
-  status: z.nativeEnum(TaskStatus).optional(),
-});
-
-const createTaskSchema = z.object({
-  title: z
-    .string()
-    .trim()
-    .min(1)
-    .max(MAX_TITLE_LENGTH),
-});
-
-export interface TaskDTO {
-  id: string;
-  title: string;
-  status: TaskStatus;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-function toTaskDTO(task: {
-  id: string;
-  title: string;
-  status: TaskStatus;
-  createdAt: Date;
-  updatedAt: Date;
-}): TaskDTO {
-  return {
-    id: task.id,
-    title: task.title,
-    status: task.status,
-    createdAt: task.createdAt,
-    updatedAt: task.updatedAt,
-  };
-}
 
 export async function listTasks(userId: string, status?: string) {
   const parsed = listTasksSchema.safeParse({ status });

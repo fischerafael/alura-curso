@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthPayload } from "@backend/auth";
-import { deleteTask, TaskNotFoundError } from "@backend/tasks";
+import { deleteTask, TaskNotFoundError } from "@backend/tasks/use-cases";
 
 export async function DELETE(
   request: NextRequest,

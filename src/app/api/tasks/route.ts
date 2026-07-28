@@ -5,7 +5,7 @@ import {
   InvalidStatusError,
   InvalidTitleError,
   listTasks,
-} from "@backend/tasks";
+} from "@backend/tasks/use-cases";
 
 export async function GET(request: NextRequest) {
   const auth = getAuthPayload(request);

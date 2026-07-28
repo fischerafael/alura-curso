@@ -33,7 +33,12 @@ Objetivo: executar o plano confirmado.
 
 Se a funcionalidade (ou parte dela) tocar código em `src/backend/`, siga TDD: escreva os testes antes de implementar.
 
-- **Testes primeiro (somente para `src/backend/`)**: antes de escrever a implementação, escreva os testes (`*.test.ts`, Vitest, ambiente `node`) cobrindo o comportamento esperado descrito no plano — casos de sucesso e os edge cases levantados na fase 1. Rode os testes e confirme que falham pelo motivo certo (função/módulo ainda não existe ou não implementado), não por erro de sintaxe no próprio teste.
+- **Testes primeiro (somente para `src/backend/`)**: antes de escrever a implementação, escreva os testes (`*.test.ts`, Vitest, ambiente `node`) cobrindo o comportamento esperado descrito no plano. Happy path sozinho não é suficiente — todo use-case precisa também de testes para os edge cases (ver [AGENTS.md do backend](../../../src/backend/AGENTS.md), seção "Testes: happy path não basta"):
+  - Cada erro de domínio que o use-case pode lançar (um teste por erro/condição, não só um genérico "lança erro").
+  - Limites de validação: vazio, só espaços/whitespace, exatamente no limite, um a mais que o limite.
+  - Resultado vazio como caso válido (lista vazia, nada encontrado) — sem lançar erro.
+  - Confirmação de que a camada de dados (mock) não foi chamada quando a validação falha antes de chegar lá.
+  - Rode os testes e confirme que falham pelo motivo certo (função/módulo ainda não existe ou não implementado), não por erro de sintaxe no próprio teste.
   - Para interações com sistemas externos e banco de dados (Prisma, APIs externas, etc.), mocke essas dependências — não bata em banco real nem em serviços externos nos testes.
   - Se o plano da fase 2 não detalhou os casos de teste, é aceitável refiná-los aqui, mas sem mudar o escopo combinado; se perceber que faltou um caso relevante no plano, avise o usuário.
 - **Implementação**: implemente exatamente o que foi combinado no plano, usando também o contexto da fase 1 como referência, até os testes escritos passarem (para o backend) ou seguindo o plano normalmente (para o restante do código, onde ainda não há TDD).
