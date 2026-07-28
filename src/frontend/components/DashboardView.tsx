@@ -18,6 +18,15 @@ const STATUS_LABEL: Record<Task["status"], string> = {
   DONE: "Concluída",
 };
 
+const STATUS_OPTIONS = Object.keys(STATUS_LABEL) as Task["status"][];
+
+const STATUS_STYLE: Record<Task["status"], string> = {
+  TODO: "border-zinc-200 text-zinc-500 dark:border-zinc-800 dark:text-zinc-400",
+  IN_PROGRESS:
+    "border-blue-200 text-blue-600 dark:border-blue-900 dark:text-blue-400",
+  DONE: "border-green-200 text-green-600 dark:border-green-900 dark:text-green-400",
+};
+
 export function DashboardView() {
   const router = useRouter();
   const [email, setEmail] = useState<string | null>(null);
@@ -70,6 +79,28 @@ export function DashboardView() {
     setTaskToDelete(null);
   }
 
+  async function handleStatusChange(taskId: string, status: Task["status"]) {
+    if (!token) return;
+
+    try {
+      const res = await fetch(`/api/tasks/${taskId}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ status }),
+      });
+
+      if (!res.ok) throw new Error();
+
+      setLoadError(null);
+      loadTasks(token);
+    } catch {
+      setLoadError("Não foi possível atualizar o status da task.");
+    }
+  }
+
   function handleLogout() {
     clearSession();
     fetch("/api/auth/logout", { method: "POST" });
@@ -118,9 +149,36 @@ export function DashboardView() {
           <div key={task.id} className="flex items-center justify-between py-4">
             <span className="text-sm">{task.title}</span>
             <div className="flex items-center gap-3">
-              <span className="rounded-full border border-zinc-200 px-3 py-1 text-xs text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
-                {STATUS_LABEL[task.status]}
-              </span>
+              <div className="relative">
+                <select
+                  value={task.status}
+                  onChange={(e) =>
+                    handleStatusChange(
+                      task.id,
+                      e.target.value as Task["status"],
+                    )
+                  }
+                  aria-label={`Status da task ${task.title}`}
+                  className={`appearance-none rounded-full border bg-transparent py-1 pl-3 pr-7 text-xs font-medium outline-none transition-colors hover:opacity-80 focus:border-foreground ${STATUS_STYLE[task.status]}`}
+                >
+                  {STATUS_OPTIONS.map((status) => (
+                    <option
+                      key={status}
+                      value={status}
+                      className="text-foreground"
+                    >
+                      {STATUS_LABEL[status]}
+                    </option>
+                  ))}
+                </select>
+                <svg
+                  aria-hidden="true"
+                  viewBox="0 0 20 20"
+                  className="pointer-events-none absolute right-2 top-1/2 h-3 w-3 -translate-y-1/2 fill-current"
+                >
+                  <path d="M5.5 7.5l4.5 4.5 4.5-4.5" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </div>
               <button
                 onClick={() => setTaskToDelete(task)}
                 aria-label={`Remover task ${task.title}`}

@@ -23,3 +23,18 @@ export async function deleteTaskByIdAndUser(userId: string, taskId: string) {
 
   return result.count > 0;
 }
+
+export async function updateTaskStatusByIdAndUser(
+  userId: string,
+  taskId: string,
+  status: TaskStatus,
+) {
+  const result = await prisma.task.updateMany({
+    where: { id: taskId, userId },
+    data: { status },
+  });
+
+  if (result.count === 0) return null;
+
+  return prisma.task.findUnique({ where: { id: taskId } });
+}

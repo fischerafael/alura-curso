@@ -1,5 +1,9 @@
 import * as tasksData from "@backend/data/tasks";
-import { listTasksSchema, createTaskSchema } from "./schema";
+import {
+  listTasksSchema,
+  createTaskSchema,
+  updateTaskStatusSchema,
+} from "./schema";
 import { toTaskDTO } from "./dto";
 
 export class InvalidStatusError extends Error {}
@@ -38,4 +42,28 @@ export async function deleteTask(userId: string, taskId: string) {
   if (!deleted) {
     throw new TaskNotFoundError("Task não encontrada");
   }
+}
+
+export async function updateTaskStatus(
+  userId: string,
+  taskId: string,
+  status: string,
+) {
+  const parsed = updateTaskStatusSchema.safeParse({ status });
+
+  if (!parsed.success) {
+    throw new InvalidStatusError("Status inválido");
+  }
+
+  const task = await tasksData.updateTaskStatusByIdAndUser(
+    userId,
+    taskId,
+    parsed.data.status,
+  );
+
+  if (!task) {
+    throw new TaskNotFoundError("Task não encontrada");
+  }
+
+  return toTaskDTO(task);
 }

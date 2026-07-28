@@ -14,3 +14,7 @@ export const createTaskSchema = z.object({
     .min(1)
     .max(MAX_TITLE_LENGTH),
 });
+
+export const updateTaskStatusSchema = z.object({
+  status: z.nativeEnum(TaskStatus),
+});

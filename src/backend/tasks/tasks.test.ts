@@ -4,6 +4,7 @@ import {
   listTasks,
   createTask,
   deleteTask,
+  updateTaskStatus,
   InvalidStatusError,
   InvalidTitleError,
   TaskNotFoundError,
@@ -15,6 +16,7 @@ vi.mock("@backend/data/tasks", () => ({
   findTasksByUser: vi.fn(),
   createTask: vi.fn(),
   deleteTaskByIdAndUser: vi.fn(),
+  updateTaskStatusByIdAndUser: vi.fn(),
 }));
 
 const now = new Date();
@@ -147,5 +149,51 @@ describe("deleteTask", () => {
     await expect(deleteTask("user-1", "task-1")).rejects.toThrow(
       TaskNotFoundError,
     );
+  });
+});
+
+describe("updateTaskStatus", () => {
+  beforeEach(() => {
+    vi.mocked(tasksData.updateTaskStatusByIdAndUser).mockReset();
+  });
+
+  it("updates the status and returns the task as a DTO", async () => {
+    const updated = { ...rawTask, status: TaskStatus.IN_PROGRESS };
+    vi.mocked(tasksData.updateTaskStatusByIdAndUser).mockResolvedValue(updated);
+
+    const result = await updateTaskStatus(
+      "user-1",
+      "task-1",
+      TaskStatus.IN_PROGRESS,
+    );
+
+    expect(result).toEqual({ ...taskDto, status: TaskStatus.IN_PROGRESS });
+    expect(tasksData.updateTaskStatusByIdAndUser).toHaveBeenCalledWith(
+      "user-1",
+      "task-1",
+      TaskStatus.IN_PROGRESS,
+    );
+  });
+
+  it("throws InvalidStatusError for a status outside the enum", async () => {
+    await expect(
+      updateTaskStatus("user-1", "task-1", "NOT_A_STATUS"),
+    ).rejects.toThrow(InvalidStatusError);
+    expect(tasksData.updateTaskStatusByIdAndUser).not.toHaveBeenCalled();
+  });
+
+  it("throws InvalidStatusError for an empty status", async () => {
+    await expect(updateTaskStatus("user-1", "task-1", "")).rejects.toThrow(
+      InvalidStatusError,
+    );
+    expect(tasksData.updateTaskStatusByIdAndUser).not.toHaveBeenCalled();
+  });
+
+  it("throws TaskNotFoundError when the task does not exist or belongs to another user", async () => {
+    vi.mocked(tasksData.updateTaskStatusByIdAndUser).mockResolvedValue(null);
+
+    await expect(
+      updateTaskStatus("user-1", "task-1", TaskStatus.DONE),
+    ).rejects.toThrow(TaskNotFoundError);
   });
 });
