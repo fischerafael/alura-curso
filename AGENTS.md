@@ -19,6 +19,8 @@ src/
 
 Regra principal: **rotas em `src/app/` não devem conter lógica de negócio.** Elas chamam funções de `src/backend/` e renderizam componentes de `src/frontend/`.
 
+Convenções específicas de `src/frontend/` (containers vs. components, camada de services, etc.) estão em [src/frontend/AGENTS.md](src/frontend/AGENTS.md).
+
 Aliases de import configurados em [tsconfig.json](tsconfig.json): `@/*`, `@frontend/*`, `@backend/*`.
 
 ## Comandos

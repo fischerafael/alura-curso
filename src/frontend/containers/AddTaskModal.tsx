@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { createTask } from "@frontend/services/tasks.service";
+import { Modal } from "@frontend/components/Modal";
 
 type AddTaskModalProps = {
   token: string;
@@ -13,14 +15,6 @@ export function AddTaskModal({ token, onClose, onCreated }: AddTaskModalProps) {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
-    }
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
-
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (loading) return;
@@ -29,38 +23,20 @@ export function AddTaskModal({ token, onClose, onCreated }: AddTaskModalProps) {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/tasks", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ title }),
-      });
-      const data = await res.json();
-
-      if (!res.ok) {
-        setError(data.error ?? "Não foi possível criar a task.");
-        return;
-      }
-
+      await createTask(token, title);
       onCreated();
-    } catch {
-      setError("Não foi possível criar a task.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Não foi possível criar a task.");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div
-      className="fixed inset-0 flex items-center justify-center bg-black/40 px-6"
-      onClick={onClose}
-    >
+    <Modal onClose={onClose}>
       <form
         onSubmit={handleSubmit}
-        onClick={(e) => e.stopPropagation()}
-        className="flex w-full max-w-sm flex-col gap-6 rounded-2xl border border-zinc-200 bg-background p-6 dark:border-zinc-800"
+        className="flex w-full flex-col gap-6 rounded-2xl border border-zinc-200 bg-background p-6 dark:border-zinc-800"
       >
         <h2 className="text-lg font-semibold tracking-tight">Nova task</h2>
 
@@ -95,6 +71,6 @@ export function AddTaskModal({ token, onClose, onCreated }: AddTaskModalProps) {
           </button>
         </div>
       </form>
-    </div>
+    </Modal>
   );
 }

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { saveSession } from "@frontend/lib/session";
+import { login } from "@frontend/services/auth.service";
 
 export function LoginForm() {
   const router = useRouter();
@@ -15,22 +16,15 @@ export function LoginForm() {
     setError(null);
     setLoading(true);
 
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-    const data = await res.json();
-
-    setLoading(false);
-
-    if (!res.ok) {
-      setError(data.error ?? "Não foi possível entrar.");
-      return;
+    try {
+      const session = await login(email);
+      saveSession(session);
+      router.push("/dashboard");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Não foi possível entrar.");
+    } finally {
+      setLoading(false);
     }
-
-    saveSession(data);
-    router.push("/dashboard");
   }
 
   return (

@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { deleteTask } from "@frontend/services/tasks.service";
+import { Modal } from "@frontend/components/Modal";
 
 type DeleteTaskModalProps = {
   token: string;
@@ -18,14 +20,6 @@ export function DeleteTaskModal({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
-    }
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [onClose]);
-
   async function handleConfirm() {
     if (loading) return;
 
@@ -33,34 +27,18 @@ export function DeleteTaskModal({
     setLoading(true);
 
     try {
-      const res = await fetch(`/api/tasks/${task.id}`, {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => null);
-        setError(data?.error ?? "Não foi possível remover a task.");
-        return;
-      }
-
+      await deleteTask(token, task.id);
       onDeleted();
-    } catch {
-      setError("Não foi possível remover a task.");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Não foi possível remover a task.");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div
-      className="fixed inset-0 flex items-center justify-center bg-black/40 px-6"
-      onClick={onClose}
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        className="flex w-full max-w-sm flex-col gap-6 rounded-2xl border border-zinc-200 bg-background p-6 dark:border-zinc-800"
-      >
+    <Modal onClose={onClose}>
+      <div className="flex w-full flex-col gap-6 rounded-2xl border border-zinc-200 bg-background p-6 dark:border-zinc-800">
         <h2 className="text-lg font-semibold tracking-tight">
           Remover task
         </h2>
@@ -91,6 +69,6 @@ export function DeleteTaskModal({
           </button>
         </div>
       </div>
-    </div>
+    </Modal>
   );
 }
